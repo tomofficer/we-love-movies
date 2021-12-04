@@ -2,7 +2,7 @@ const knex = require("../db/connection");
 const reduceProperties = require("../utils/reduce-properties");
 
 
-//reducer
+//reducer, filter movies to only show necessary properties
 const reduceMovies = reduceProperties("theater_id", {
     title: ["movies", null, "title"],
     runtime_in_minutes: ["movies", null, "runtime_in_minutes"],
