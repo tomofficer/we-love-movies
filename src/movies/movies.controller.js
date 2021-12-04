@@ -1,6 +1,6 @@
 const service = require("./movies.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
-const { as } = require("../db/connection");
+
 
 //validation
 async function movieExists(req, res, next) {
