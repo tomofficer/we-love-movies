@@ -63,5 +63,9 @@ function listReviews(id) {
 
 //exports
 module.exports = {
-  list, listNowPlaying, read, listTheaters, listReviews,
+  list,
+  listNowPlaying,
+  read,
+  listTheaters,
+  listReviews,
 };
