@@ -1,26 +1,25 @@
-const knex = require("../db/connection");
+//dependencies 
+const knex = require("../db/connection")
 const reduceProperties = require("../utils/reduce-properties");
 
-
-//reducer, filter movies to only show necessary properties
-const reduceMovies = reduceProperties("theater_id", {
-    title: ["movies", null, "title"],
-    runtime_in_minutes: ["movies", null, "runtime_in_minutes"],
-    rating: ["movies", null, "rating"],
-    image_url: ["movies", null, "image_url"],
+//add movies to theater, helper function
+const addMovies = reduceProperties("theater_id", {
+  movie_id: ["movies", null, "movie_id"],
+  title: ["movies", null, "title"],
+  rating: ["movies", null, "rating"],
+  runtime_in_minutes: ["movies", null, "runtime_in_minutes"],
 });
 
-//list all theaters
+//get all theaters
 function list() {
-  return knex("theaters as t")
+    return knex("theaters as t")
     .join("movies_theaters as mt", "mt.theater_id", "t.theater_id")
     .join("movies as m", "m.movie_id", "mt.movie_id")
     .select("*")
-    .then(reduceMovies);
-};
-
+    .then(addMovies)
+}
 
 //exports
 module.exports = {
-  list,
+    list
 };

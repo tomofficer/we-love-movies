@@ -1,59 +1,61 @@
-const service = require("./movies.service");
+//dependencies
+const moviesService = require("./movies.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
-
-//validation
+//middleware validation, check if movie exists
 async function movieExists(req, res, next) {
   const { movieId } = req.params;
-  const movie = await service.read(movieId);
-
+  const movie = await moviesService.read(movieId);
   if (movie) {
     res.locals.movie = movie;
     return next();
-  } else {
-      return next({
+  }
+  return next({
     status: 404,
-    message: `Movie cannot be found.`
+    message: `Movie cannot be found.`,
   });
-  }
-};
+}
 
-//list movies currently playing
+//list, get all currently showing
 async function list(req, res, next) {
-  const isShowing = req.query.is_showing;
-  if (isShowing) {
-    res.json({ data: await service.listNowPlaying() })
-  } else {
-    res.json({ data: await service.list() })
+  const { is_showing } = req.query;
+  if (is_showing) {
+    const data = await moviesService.listIsShowing();
+    return res.json({ data });
   }
-};
-
-//read movie
-async function read(req, res) {
-  const { movie } = res.locals;
-  const data = await service.read(movie.movie_id);
+  const data = await moviesService.list();
   res.json({ data });
-};
+}
 
-//list theaters
-async function listTheaters(req, res) {
-  const { movie } = res.locals;
-  const data = await service.listTheaters(movie.movie_id);
+//get by Id
+async function read(req, res, next) {
+  res.json({ data: res.locals.movie });
+}
+
+//get theaters showing movie by Id
+async function readTheaters(req, res, next) {
+  const { movieId } = req.params;
+  const data = await moviesService.readTheaters(movieId);
   res.json({ data });
-};
+}
 
-//list reviews
-async function listReviews(req, res) {
-  const { movie } = res.locals;
-  const data = await service.listReviews(movie.movie_id);
+//get reviews for movie by Id
+async function readReviews(req, res) {
+  const { movieId } = req.params;
+  const data = await moviesService.readReviews(movieId);
   res.json({ data });
-};
-
+}
 
 //exports
 module.exports = {
-  list: asyncErrorBoundary(list),
-  read: [asyncErrorBoundary(movieExists), asyncErrorBoundary(read)],
-  listTheaters: [asyncErrorBoundary(movieExists), asyncErrorBoundary(listTheaters)],
-  listReviews: [asyncErrorBoundary(movieExists), asyncErrorBoundary(listReviews)],
+  list,
+  read: [asyncErrorBoundary(movieExists), read],
+  readTheaters: [
+    asyncErrorBoundary(movieExists),
+    asyncErrorBoundary(readTheaters),
+  ],
+  readReviews: [
+    asyncErrorBoundary(movieExists),
+    asyncErrorBoundary(readReviews),
+  ],
 };

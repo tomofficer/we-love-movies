@@ -1,14 +1,13 @@
-const router = require("express").Router();
+//dependencies
+const router = require("express").Router({mergeParams: true});
 const controller = require("./theaters.controller");
-const methodNotAllowed = require("../errors/methodNotAllowed");
+const methodNotAllowed = require("../errors/methodNotAllowed")
 
-
-//router
+//paths
 router
-  .route("/")
-  .get(controller.list)
-  .all(methodNotAllowed);
-
-  
+    .route("/")
+    .get(controller.list)
+    .all(methodNotAllowed)
+   
 //exports
 module.exports = router;
